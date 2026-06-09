@@ -600,6 +600,92 @@ h2.s-title b{font-weight:600}
 .plan-btn:hover svg{transform:translateX(3px)}
 
 /* ══════════════════════════════════════════
+   CÓMO FUNCIONA
+══════════════════════════════════════════ */
+#como-funciona{
+  background:var(--cream-deep);
+  padding:120px var(--pad);
+}
+.cf-header{
+  text-align:center;
+  margin-bottom:72px;
+}
+.cf-header .section-eyebrow{
+  font-size:.72rem;font-weight:500;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--solar);
+  display:block;margin-bottom:16px;
+}
+.cf-header h2{
+  font-family:var(--f-display);
+  font-size:clamp(2rem,3.5vw,3.2rem);
+  font-weight:300;
+  color:var(--ink);
+  line-height:1.15;
+}
+.cf-header h2 em{
+  font-style:italic;color:var(--solar);
+}
+.cf-steps{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:24px;
+  position:relative;
+}
+.cf-steps::before{
+  content:'';
+  position:absolute;
+  top:36px;left:calc(12.5% + 20px);
+  width:calc(75% - 40px);
+  height:1px;
+  background:var(--ink-10);
+  z-index:0;
+}
+.cf-step{
+  position:relative;
+  z-index:1;
+  text-align:center;
+  padding:32px 20px;
+  background:var(--cream);
+  border-radius:16px;
+  border:1px solid var(--ink-10);
+  transition:transform .3s,box-shadow .3s;
+}
+.cf-step:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 32px rgba(26,22,18,.08);
+}
+.cf-step-num{
+  width:56px;height:56px;
+  border-radius:50%;
+  background:var(--solar);
+  color:var(--ink);
+  font-family:var(--f-display);
+  font-size:1.4rem;
+  font-weight:600;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 20px;
+}
+.cf-step h3{
+  font-family:var(--f-display);
+  font-size:1.1rem;
+  font-weight:400;
+  color:var(--ink);
+  margin-bottom:10px;
+}
+.cf-step p{
+  font-size:.88rem;
+  color:var(--ink-60);
+  line-height:1.6;
+}
+@media(max-width:768px){
+  .cf-steps{grid-template-columns:repeat(2,1fr);}
+  .cf-steps::before{display:none;}
+}
+@media(max-width:480px){
+  .cf-steps{grid-template-columns:1fr;}
+}
+
+/* ══════════════════════════════════════════
    PLANES — oculto temporalmente
 ══════════════════════════════════════════ */
 #planes{display:none;background:var(--cream);}
@@ -1199,6 +1285,38 @@ footer{
             <div class="pain-desc">El mercado ofrece soluciones para casas o para industria. Un café, una peluquería o una ferretera sencillamente no existen para este sector.</div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ CÓMO FUNCIONA ════ -->
+<section id="como-funciona">
+  <div class="wrap">
+    <div class="cf-header">
+      <span class="section-eyebrow">El proceso</span>
+      <h2>Simple por diseño,<br><em>efectivo por dentro</em></h2>
+    </div>
+    <div class="cf-steps">
+      <div class="cf-step">
+        <div class="cf-step-num">1</div>
+        <h3>Diagnóstico gratuito</h3>
+        <p>Cuéntanos sobre tu negocio. Analizamos tu consumo actual y te decimos exactamente cuánto podrías ahorrar. Sin compromiso.</p>
+      </div>
+      <div class="cf-step">
+        <div class="cf-step-num">2</div>
+        <h3>Propuesta a medida</h3>
+        <p>Te presentamos el plan ideal según el tamaño y consumo de tu negocio — Solaris Lite o Pro — con números claros.</p>
+      </div>
+      <div class="cf-step">
+        <div class="cf-step-num">3</div>
+        <h3>Nos encargamos de todo</h3>
+        <p>Permisos, instalador certificado, trámites con la distribuidora. Tú solo abres el local. Nosotros hacemos el resto.</p>
+      </div>
+      <div class="cf-step">
+        <div class="cf-step-num">4</div>
+        <h3>Empieza a ahorrar</h3>
+        <p>Instalación en 1 día para Lite. Seguimiento mensual incluido para que veas el ahorro real reflejado en tu boleta.</p>
       </div>
     </div>
   </div>
