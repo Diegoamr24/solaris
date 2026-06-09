@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Solaris — Energía Solar para tu Negocio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Outfit:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+
+<style>
+/* ══════════════════════════════════════════
+   TOKENS
+══════════════════════════════════════════ */
+:root {
+  --cream:       #F7F3EC;
+  --cream-deep:  #EDE8DF;
+  --ink:         #1A1612;
+  --ink-60:      rgba(26,22,18,.6);
+  --ink-30:      rgba(26,22,18,.3);
+  --ink-10:      rgba(26,22,18,.08);
+  --solar:       #E8B800;
+  --solar-light: #FFF0A0;
+  --solar-pale:  #FFFAE5;
+  --rust:        #C4622D;
+  --sky:         #2B4C7E;
+
+  --f-display: 'Cormorant Garamond', Georgia, serif;
+  --f-serif:   'Instrument Serif', Georgia, serif;
+  --f-sans:    'Outfit', sans-serif;
+
+  --max: 1160px;
+  --pad: clamp(20px, 5vw, 48px);
+  --r:   3px;
+}
+
+/* ══════════════════════════════════════════
+   RESET
+══════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  background:var(--cream);
+  color:var(--ink);
+  font-family:var(--f-sans);
+  font-weight:300;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+button{cursor:pointer;font-family:inherit}
+
+/* ════════════════════════════════════════════
+   CUSTOM CURSOR (SVG nativo — flecha macOS con acento solar)
+════════════════════════════════════════════ */
+/*
+  Cursor default: flecha estilo macOS — cuerpo oscuro (--ink), contorno blanco fino,
+  punta de la flecha en --solar como guiño de marca. Hotspot en (2,2).
+*/
+body {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M4 2 L4 18 L8 14 L11.5 22 L13.5 21.2 L10 13.2 L16 13.2 Z' fill='%231A1612' stroke='%23FFFFFF' stroke-width='1.2' stroke-linejoin='round'/%3E%3Ccircle cx='4' cy='2' r='2' fill='%23E8B800'/%3E%3C/svg%3E") 2 2, default;
+}
+/*
+  Hover sobre interactivos: misma flecha pero el cuerpo se vuelve --solar oscuro
+  y la punta sigue dorada — se siente como "encendido".
+*/
+a, button, input, select, label, [role="button"] {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M4 2 L4 18 L8 14 L11.5 22 L13.5 21.2 L10 13.2 L16 13.2 Z' fill='%23C49800' stroke='%23FFFFFF' stroke-width='1.2' stroke-linejoin='round'/%3E%3Ccircle cx='4' cy='2' r='2.2' fill='%23E8B800'/%3E%3C/svg%3E") 2 2, pointer;
+}
+@media(hover:none){ body, a, button, input, select { cursor: auto; } }
+
+
+/* ══════════════════════════════════════════
+   GRAIN OVERLAY
+══════════════════════════════════════════ */
+body::after{
+  content:'';position:fixed;inset:0;
+  pointer-events:none;z-index:9000;
+  opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+
+/* ══════════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════════ */
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
+
+/* ══════════════════════════════════════════
+   REVEAL ANIMATIONS
+══════════════════════════════════════════ */
+.r{opacity:0;transform:translateY(24px);
+   transition:opacity .85s cubic-bezier(.23,1,.32,1),transform .85s cubic-bezier(.23,1,.32,1)}
+.r.up{opacity:1;transform:none}
+.r-d1{transition-delay:.1s}.r-d2{transition-delay:.22s}
+.r-d3{transition-delay:.34s}.r-d4{transition-delay:.48s}
+.r-fade{opacity:0;transition:opacity 1s ease}.r-fade.up{opacity:1}
+
+/* ── Hero eyebrow: fade simple y rápido */
+.hero-enter{
+  opacity:0;
+  animation: he-fade .7s ease both;
+}
+@keyframes he-fade{ to{opacity:1} }
+.he-d0{animation-delay:.1s}
+.he-d2{animation-delay:.55s}
+.he-d3{animation-delay:.75s}
+
+/* ── Máscara de líneas del h1
+   Cada .line-mask hace overflow:hidden.
+   El span hijo (.line-inner) sube desde translateY(108%) → 0.
+   No hay fade: el texto aparece limpio desde el borde inferior. */
+.line-mask{
+  display:block;
+  overflow:hidden;
+  padding-bottom:.15em;
+}
+.line-inner{
+  display:block;
+  transform:translateY(110%);
+  animation: line-up .9s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes line-up{
+  from{ transform: translateY(110%) }
+  to{ transform: translateY(0%) }
+}
+h1.hero-h1 em,
+h1.hero-h1 strong{
+  display:block;
+}
+/* Delays escalonados por línea */
+.line-mask:nth-child(1) .line-inner{animation-delay:.18s}
+.line-mask:nth-child(2) .line-inner{animation-delay:.32s}
+.line-mask:nth-child(3) .line-inner{animation-delay:.44s}
+
+/* ── Sol: órbitas se dibujan con stroke-dashoffset */
+/* Circunferencia anillo 1 (r=140): 2π×140 ≈ 880 */
+.sun-orbit circle[r="140"],
+.sun-orbit circle[cx="190"][cy="190"][r="140"]{
+  /* no afecta, el stroke-dasharray ya está en el SVG attr */
+}
+.sun-draw-1{
+  stroke-dasharray: 880;
+  stroke-dashoffset: 880;
+  animation: draw-ring 1.6s cubic-bezier(.4,0,.2,1) both;
+  animation-delay: .3s;
+}
+/* Circunferencia anillo 2 (r=105): 2π×105 ≈ 660 */
+.sun-draw-2{
+  stroke-dasharray: 660;
+  stroke-dashoffset: 660;
+  animation: draw-ring 1.4s cubic-bezier(.4,0,.2,1) both;
+  animation-delay: .55s;
+}
+@keyframes draw-ring{
+  to{ stroke-dashoffset: 0 }
+}
+
+/* Satélites de los anillos: aparecen cuando el anillo ya llegó */
+.sun-dot{
+  opacity:0;
+  animation: dot-pop .4s cubic-bezier(.34,1.56,.64,1) both;
+}
+.sd-1a{animation-delay:1.1s}
+.sd-1b{animation-delay:1.2s}
+.sd-2a{animation-delay:1.25s}
+.sd-2b{animation-delay:1.35s}
+@keyframes dot-pop{
+  from{opacity:0;transform:scale(0);transform-box:fill-box;transform-origin:center}
+  to{opacity:1;transform:scale(1);transform-box:fill-box;transform-origin:center}
+}
+
+/* Núcleo del sol: scale 0 → 1 con bounce */
+.sun-core-outer{
+  opacity:0;
+  animation: core-in .6s cubic-bezier(.34,1.45,.64,1) both;
+  animation-delay:.85s;
+  transform-box:fill-box;transform-origin:center;
+}
+.sun-core-mid{
+  opacity:0;
+  animation: core-in .5s cubic-bezier(.34,1.45,.64,1) both;
+  animation-delay:.98s;
+  transform-box:fill-box;transform-origin:center;
+}
+.sun-core{
+  opacity:0;
+  animation: core-in .45s cubic-bezier(.34,1.56,.64,1) both;
+  animation-delay:1.1s;
+  transform-box:fill-box;transform-origin:center;
+}
+@keyframes core-in{
+  from{opacity:0;transform:scale(0)}
+  to{opacity:1;transform:scale(1)}
+}
+
+/* Glow exterior: fade después del núcleo */
+.sun-pulse{
+  opacity:0;
+  animation: glow-in .8s ease both, glow 4s ease-in-out 2s infinite;
+  animation-delay:.9s, 2s;
+}
+@keyframes glow-in{ to{opacity:.12} }
+@keyframes glow{
+  0%,100%{opacity:.08} 50%{opacity:.22}
+}
+
+/* hero-right entrance: sin slide, solo fade para no interferir */
+.hero-right{
+  animation: he-fade 1s ease both;
+  animation-delay:.2s;
+}
+
+/* ══════════════════════════════════════════
+   NAV
+══════════════════════════════════════════ */
+#nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  padding:28px var(--pad);
+  display:flex;align-items:center;justify-content:space-between;
+  transition:background .4s,padding .4s,border-color .4s;
+  border-bottom:1px solid transparent;
+}
+#nav.stuck{
+  background:rgba(247,243,236,.92);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  padding:18px var(--pad);
+  border-color:var(--ink-10);
+}
+.nav-brand{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--f-display);font-size:1.45rem;font-weight:600;
+  letter-spacing:.01em;
+}
+.brand-mark{
+  width:30px;height:30px;flex-shrink:0;
+}
+.nav-links{
+  display:flex;align-items:center;gap:36px;
+}
+.nav-links a{
+  font-size:.82rem;font-weight:400;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink-60);
+  transition:color .2s;
+}
+.nav-links a:hover{color:var(--ink)}
+.nav-pill{
+  background:var(--ink);color:var(--cream);
+  font-size:.8rem;font-weight:500;letter-spacing:.06em;
+  text-transform:uppercase;
+  padding:10px 22px;border-radius:40px;
+  border:none;
+  transition:background .2s,transform .15s;
+}
+.nav-pill:hover{background:var(--solar);color:var(--ink);transform:translateY(-1px)}
+
+/* ══════════════════════════════════════════
+   HERO
+══════════════════════════════════════════ */
+#hero{
+  min-height:100svh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  align-items:center;
+  padding-top:120px;
+  position:relative;
+  overflow:hidden;
+}
+
+/* Cream gradient split */
+#hero::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(105deg,var(--cream) 52%,var(--solar-pale) 52%);
+  z-index:0;
+}
+
+/*
+ * IMAGEN HERO — textura de paneles solares en el cuadrante derecho
+ * Aparece solo en el lado derecho (desde 52% hacia la derecha),
+ * mezclada con --solar-pale a opacity muy baja — casi no se nota,
+ * da profundidad y contexto sin competir con el sol SVG.
+ *
+ * Unsplash: paneles solares, Nuno Marques (@logvisuals)
+ * URL directa: https://unsplash.com/photos/black-and-white-solar-panels-0GbrjL3vZF4
+ * Para reemplazar con foto propia: url('img/hero-paneles.jpg')
+ */
+/* Hero::after — imagen de paneles removida. El sol SVG es suficiente. */
+
+.hero-left{
+  position:relative;z-index:2;
+  padding:80px var(--pad) 80px clamp(20px,5vw,80px);
+}
+
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:.72rem;font-weight:500;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--rust);
+  margin-bottom:36px;
+}
+.hero-eyebrow::before{
+  content:'';width:32px;height:1px;background:var(--rust);
+}
+
+h1.hero-h1{
+  font-family:var(--f-display);
+  font-size:clamp(3rem,5.5vw,6rem);
+  font-weight:300;
+  line-height:1.12;
+  letter-spacing:-.02em;
+  margin-bottom:32px;
+}
+h1.hero-h1 em{
+  font-style:italic;font-weight:300;
+  color:var(--rust);
+}
+h1.hero-h1 strong{
+  font-weight:600;display:block;
+}
+
+.hero-p{
+  font-size:1.05rem;font-weight:300;
+  color:var(--ink-60);line-height:1.8;
+  max-width:380px;margin-bottom:44px;
+}
+
+/* ── Hero CTAs ── */
+.hero-ctas{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+}
+.hero-btn-main{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--ink);color:var(--cream);
+  border:none;border-radius:40px;
+  font-family:var(--f-sans);font-size:.85rem;font-weight:500;
+  letter-spacing:.04em;padding:14px 28px;
+  transition:background .2s,transform .15s;
+}
+.hero-btn-main:hover{background:var(--solar);color:var(--ink);transform:translateY(-1px)}
+.hero-btn-main svg{width:13px;height:13px}
+.hero-btn-sec{
+  background:transparent;color:var(--ink);
+  border:1.5px solid var(--ink-30);border-radius:40px;
+  font-family:var(--f-sans);font-size:.85rem;font-weight:400;
+  padding:13px 24px;
+  transition:border-color .2s,color .2s,transform .15s;
+}
+.hero-btn-sec:hover{border-color:var(--ink);color:var(--ink);transform:translateY(-1px)}
+
+.hero-right{
+  position:relative;z-index:2;
+  display:flex;align-items:center;justify-content:center;
+  padding:80px 40px 80px 20px;
+}
+
+/* Big animated sun */
+.sun-scene{
+  position:relative;width:min(380px,40vw);height:min(380px,40vw);
+  animation: sun-float 8s ease-in-out infinite;
+}
+.sun-scene svg{width:100%;height:100%}
+.sun-orbit{
+  animation:spin 32s linear infinite;
+  transform-origin:50% 50%;
+}
+.sun-orbit-2{
+  animation:spin-r 48s linear infinite;
+  transform-origin:50% 50%;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes spin-r{to{transform:rotate(-360deg)}}
+/* Floating drift — suave, casi imperceptible */
+@keyframes sun-float{
+  0%,100%{transform:translateY(0px) rotate(0deg)}
+  30%{transform:translateY(-14px) rotate(.8deg)}
+  70%{transform:translateY(-6px) rotate(-.5deg)}
+}
+
+/* Floating stat cards */
+.hero-stat-card{
+  position:absolute;
+  background:var(--cream);
+  border:1px solid var(--ink-10);
+  border-radius:12px;
+  padding:16px 20px;
+  box-shadow:0 8px 32px rgba(26,22,18,.08);
+  animation: card-in .9s cubic-bezier(.23,1,.32,1) both;
+}
+.hsc-1{bottom:18%;left:-4%;animation-delay:.9s}
+.hsc-2{top:14%;right:0%;animation-delay:1.1s}
+@keyframes card-in{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:none}
+}
+.hsc-num{
+  font-family:var(--f-display);font-size:2rem;
+  font-weight:600;line-height:1;
+  color:var(--ink);
+}
+.hsc-1 .hsc-num{color:var(--rust)}
+.hsc-2 .hsc-num{color:var(--sky)}
+.hsc-lbl{font-size:.72rem;font-weight:400;color:var(--ink-60);margin-top:4px}
+
+/* ══════════════════════════════════════════
+   TICKER / MARQUEE
+══════════════════════════════════════════ */
+
+#problema{
+  padding:80px var(--pad);
+  background:var(--cream-deep);
+  position:relative;
+  /* url('img/fondo-problema.jpg') — reemplaza la URL de Unsplash por esta cuando tengas tu foto */
+}
+/* La imagen va en ::before, detrás del contenido.
+   Un overlay crema encima controla cuánto se ve la foto. */
+#problema::before{
+  content:'';
+  position:absolute;inset:0;
+  background-image: url('img/fondo-problema.jpg');
+  background-size:cover;
+  background-position:center;
+  opacity:.18;
+  z-index:0;
+  pointer-events:none;
+}
+/* El .wrap y el card deben quedar sobre la imagen */
+#problema > .wrap{position:relative;z-index:1;}
+.problema-wrap{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0;
+  border:1px solid var(--ink-10);
+  border-radius:12px;
+  overflow:hidden;
+}
+.problema-left{
+  padding:48px;
+  background:var(--ink);
+  color:var(--cream);
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:32px;
+}
+.problema-left .section-num{color:rgba(247,243,236,.25)}
+.problema-left h2.s-title{color:var(--cream)}
+.problema-left h2.s-title em{color:var(--solar)}
+.problema-stat{
+  display:flex;flex-direction:column;gap:4px;
+  padding-top:24px;
+  border-top:1px solid rgba(247,243,236,.1);
+}
+.ps-num{
+  font-family:var(--f-display);
+  font-size:3rem;font-weight:300;
+  color:var(--solar);line-height:1;
+}
+.ps-lbl{font-size:.78rem;color:rgba(247,243,236,.4);letter-spacing:.04em}
+.section-num{
+  font-family:var(--f-display);font-size:.85rem;
+  color:var(--ink-30);letter-spacing:.1em;
+  margin-bottom:20px;display:block;
+}
+h2.s-title{
+  font-family:var(--f-display);
+  font-size:clamp(2.2rem,4vw,3.6rem);
+  font-weight:300;line-height:1.1;
+  letter-spacing:-.01em;
+}
+h2.s-title em{font-style:italic;color:var(--rust)}
+h2.s-title b{font-weight:600}
+
+.problema-right{
+  display:flex;flex-direction:column;gap:0;
+}
+.pain-row{
+  display:grid;grid-template-columns:32px 1fr;gap:12px 20px;
+  align-items:start;
+  padding:24px 32px;
+  border-bottom:1px solid var(--ink-10);
+  transition:background .2s;
+}
+.pain-row:last-child{border-bottom:none}
+.pain-row:hover{background:var(--solar-pale)}
+.pain-idx{
+  font-family:var(--f-display);font-size:.85rem;
+  font-weight:300;color:var(--ink-30);
+  padding-top:2px;
+}
+.pain-body{}
+.pain-title{
+  font-size:.92rem;font-weight:500;
+  margin-bottom:4px;letter-spacing:.01em;
+}
+.pain-desc{font-size:.82rem;color:var(--ink-60);line-height:1.65}
+
+/* ══════════════════════════════════════════
+   PLANES
+══════════════════════════════════════════ */
+#planes{
+  padding:0 0 140px;
+  position:relative;
+}
+
+.planes-header{
+  padding:80px var(--pad) 64px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:40px;
+  align-items:end;
+  border-bottom:1px solid var(--ink-10);
+}
+.planes-intro{
+  font-size:1rem;color:var(--ink-60);
+  line-height:1.8;max-width:400px;
+}
+
+.planes-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+}
+
+.plan{
+  padding:56px var(--pad);
+  position:relative;
+  transition:background .3s;
+}
+.plan:first-child{border-right:1px solid var(--ink-10)}
+.plan:hover{background:var(--solar-pale)}
+
+.plan-chip{
+  display:inline-block;
+  font-size:.7rem;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;
+  border:1px solid var(--ink-30);color:var(--ink-60);
+  padding:4px 12px;border-radius:40px;
+  margin-bottom:28px;
+}
+.plan.highlight .plan-chip{
+  background:var(--solar);border-color:var(--solar);color:var(--ink);
+}
+
+.plan-name{
+  font-family:var(--f-display);
+  font-size:clamp(2rem,3vw,2.8rem);
+  font-weight:300;letter-spacing:-.01em;
+  margin-bottom:8px;
+}
+.plan-sub{font-size:.88rem;color:var(--ink-60);margin-bottom:36px}
+
+.plan-price-block{
+  display:flex;align-items:baseline;gap:8px;
+  margin-bottom:10px;
+}
+.plan-amt{
+  font-family:var(--f-display);
+  font-size:clamp(2.4rem,4vw,3.6rem);
+  font-weight:600;line-height:1;
+}
+.plan-unit{font-size:.85rem;color:var(--ink-60)}
+
+.plan-saving{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--solar-light);
+  font-size:.78rem;font-weight:500;
+  padding:4px 12px;border-radius:40px;
+  margin-bottom:40px;color:var(--ink);
+}
+.plan-saving svg{width:12px;height:12px}
+
+.plan-features{
+  display:flex;flex-direction:column;gap:14px;
+  margin-bottom:44px;
+}
+.pf{
+  display:flex;align-items:flex-start;gap:14px;
+  font-size:.875rem;font-weight:300;color:var(--ink);
+  line-height:1.5;
+}
+.pf-icon{
+  width:20px;height:20px;flex-shrink:0;margin-top:1px;
+}
+
+.plan-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:.82rem;font-weight:500;letter-spacing:.08em;
+  text-transform:uppercase;
+  padding:14px 28px;border-radius:40px;
+  border:1.5px solid var(--ink);
+  background:transparent;color:var(--ink);
+  transition:all .22s;
+}
+.plan-btn:hover,.plan.highlight .plan-btn{
+  background:var(--ink);color:var(--cream);
+}
+.plan.highlight .plan-btn:hover{
+  background:var(--solar);color:var(--ink);border-color:var(--solar);
+}
+.plan-btn svg{width:14px;height:14px;transition:transform .2s}
+.plan-btn:hover svg{transform:translateX(3px)}
+
+/* ══════════════════════════════════════════
+   PLANES — oculto temporalmente
+══════════════════════════════════════════ */
+#planes{display:none;background:var(--cream);}
+
+/* ══════════════════════════════════════════
+   SIMULADOR
+══════════════════════════════════════════ */
+#simulador{
+  background:var(--ink);
+  color:var(--cream);
+  padding:120px var(--pad);
+  position:relative;overflow:hidden;
+}
+#simulador::before{
+  content:'';position:absolute;
+  top:-40%;right:-20%;
+  width:60vw;height:60vw;max-width:700px;max-height:700px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(232,184,0,.12) 0%,transparent 65%);
+  pointer-events:none;
+}
+
+.sim-inner{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:80px;
+  align-items:start;
+}
+
+.sim-left{}
+
+.sim-label{
+  font-size:.72rem;font-weight:500;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--solar);
+  margin-bottom:20px;display:flex;align-items:center;gap:10px;
+}
+.sim-label::before{content:'';width:28px;height:1px;background:var(--solar)}
+
+h2.sim-h2{
+  font-family:var(--f-display);
+  font-size:clamp(2rem,3.5vw,3rem);
+  font-weight:300;line-height:1.1;
+  letter-spacing:-.01em;
+  margin-bottom:16px;
+}
+h2.sim-h2 em{font-style:italic;color:var(--solar)}
+
+.sim-hint{
+  font-size:.9rem;color:rgba(247,243,236,.5);
+  margin-bottom:48px;line-height:1.7;
+}
+
+/* Field */
+.sf{margin-bottom:24px}
+.sf label{
+  display:block;font-size:.72rem;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(247,243,236,.4);margin-bottom:10px;
+}
+.sf input[type=number]{
+  width:100%;
+  background:rgba(247,243,236,.06);
+  border:1px solid rgba(247,243,236,.12);
+  border-radius:var(--r);
+  color:var(--cream);
+  font-family:var(--f-display);font-size:2rem;font-weight:300;
+  padding:16px 20px;outline:none;
+  -moz-appearance:textfield;
+  transition:border .2s,background .2s;
+}
+.sf input[type=number]::-webkit-inner-spin-button,
+.sf input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
+.sf input[type=number]:focus{
+  border-color:var(--solar);
+  background:rgba(232,184,0,.07);
+}
+.sf input::placeholder{color:rgba(247,243,236,.2)}
+
+/* Plan toggle */
+.plan-toggle{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:1px;background:rgba(247,243,236,.08);
+  border-radius:var(--r);overflow:hidden;
+  margin-bottom:32px;
+}
+.pt-btn{
+  background:transparent;border:none;
+  color:rgba(247,243,236,.45);
+  font-family:var(--f-sans);font-size:.85rem;font-weight:400;
+  padding:13px;
+  transition:all .2s;
+}
+.pt-btn.on{background:var(--solar);color:var(--ink);font-weight:500}
+.pt-btn:hover:not(.on){background:rgba(247,243,236,.06);color:var(--cream)}
+
+.sim-calc-btn{
+  width:100%;
+  background:var(--solar);color:var(--ink);
+  border:none;border-radius:var(--r);
+  font-family:var(--f-sans);font-size:.9rem;font-weight:500;
+  letter-spacing:.05em;
+  padding:16px;
+  transition:background .2s,transform .15s;
+}
+.sim-calc-btn:hover{background:#d4aa00;transform:translateY(-1px)}
+
+/* Right: results */
+.sim-right{}
+
+.sim-result-shell{
+  background:rgba(247,243,236,.04);
+  border:1px solid rgba(247,243,236,.1);
+  border-radius:8px;
+  min-height:380px;
+  overflow:hidden;
+}
+
+.sim-empty{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:60px 32px;text-align:center;
+  color:rgba(247,243,236,.25);font-size:.9rem;gap:16px;
+}
+.sim-empty svg{width:48px;height:48px;opacity:.4}
+
+.sim-data{display:none;flex-direction:column}
+.sim-data.show{display:flex}
+
+.sim-plan-tag{
+  background:var(--solar);color:var(--ink);
+  font-size:.7rem;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;
+  padding:10px 20px;
+}
+
+.sim-metric{
+  padding:24px 28px;
+  border-bottom:1px solid rgba(247,243,236,.07);
+}
+.sim-metric:last-child{border-bottom:none}
+.sm-lbl{
+  font-size:.68rem;font-weight:500;letter-spacing:.15em;
+  text-transform:uppercase;color:rgba(247,243,236,.35);
+  margin-bottom:8px;
+}
+.sm-val{
+  font-family:var(--f-display);
+  font-size:2.2rem;font-weight:300;
+  line-height:1;color:var(--cream);
+}
+.sm-val.hi{color:var(--solar)}
+.sm-note{font-size:.78rem;color:rgba(247,243,236,.35);margin-top:6px}
+
+.payback-track{
+  height:4px;background:rgba(247,243,236,.08);
+  border-radius:2px;margin-top:12px;overflow:hidden;
+}
+.payback-fill{
+  height:100%;background:var(--solar);
+  border-radius:2px;width:0%;
+  transition:width 1.2s cubic-bezier(.23,1,.32,1);
+}
+
+/* ══════════════════════════════════════════
+   FOTO SEPARADOR
+══════════════════════════════════════════ */
+#foto-separador{
+  height: 65vh;
+  min-height: 400px;
+  background-image: url('img/separador.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; /* parallax suave */
+}
+@media(max-width:900px){
+  #foto-separador{
+    background-attachment: scroll; /* fixed no funciona bien en mobile */
+    height: 45vw;
+    min-height: 260px;
+  }
+}
+
+/* ══════════════════════════════════════════
+   WAITLIST
+══════════════════════════════════════════ */
+#waitlist{
+  padding:140px var(--pad);
+  background:var(--cream-deep);
+  position:relative;overflow:hidden;
+  border-top: 1px solid var(--ink-10);
+  /* url('img/fondo-waitlist.jpg') — reemplaza cuando tengas tu foto */
+}
+
+/* large decorative circle */
+#waitlist::after{
+  content:'';position:absolute;
+  bottom:-30%;right:-15%;
+  width:55vw;height:55vw;max-width:640px;max-height:640px;
+  border-radius:50%;
+  background:var(--solar-pale);
+  pointer-events:none;z-index:0;
+}
+
+/* Imagen de fondo waitlist — café con luz natural */
+#waitlist::before{
+  content:'';
+  position:absolute;inset:0;
+  background-image: url('img/fondo-waitlist.jpg');
+  background-size:cover;
+  background-position:center top;
+  opacity:.14;
+  z-index:0;
+  pointer-events:none;
+}
+
+.wl-inner{
+  position:relative;z-index:2;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:80px;
+  align-items:start;
+}
+
+.wl-left{}
+.wl-overline{
+  font-size:.72rem;font-weight:500;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--rust);
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:24px;
+}
+.wl-overline::before{content:'';width:28px;height:1px;background:var(--rust)}
+
+h2.wl-h2{
+  font-family:var(--f-display);
+  font-size:clamp(2.4rem,4.5vw,4rem);
+  font-weight:300;line-height:1.05;
+  letter-spacing:-.02em;
+  margin-bottom:28px;
+}
+h2.wl-h2 em{font-style:italic;color:var(--rust)}
+
+.wl-body{
+  font-size:.95rem;color:var(--ink-60);
+  line-height:1.8;margin-bottom:40px;
+  max-width:380px;
+}
+
+.wl-reasons{display:flex;flex-direction:column;gap:16px}
+.wl-reason{
+  display:flex;align-items:flex-start;gap:14px;
+  font-size:.875rem;color:var(--ink-60);
+}
+.wl-dot{
+  width:6px;height:6px;background:var(--rust);
+  border-radius:50%;margin-top:7px;flex-shrink:0;
+}
+
+/* Form */
+.wl-right{}
+
+.wl-form-card{
+  background:var(--cream);
+  border:1px solid var(--ink-10);
+  border-radius:12px;
+  padding:44px 40px;
+  box-shadow:0 12px 48px rgba(26,22,18,.05);
+}
+
+.form-duo{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.form-single{margin-bottom:16px}
+
+.ff{display:flex;flex-direction:column;gap:8px}
+.ff label{
+  font-size:.72rem;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-60);
+}
+.ff input,.ff select{
+  background:var(--cream-deep);
+  border:1px solid transparent;
+  border-radius:var(--r);
+  font-family:var(--f-sans);font-size:.92rem;font-weight:300;
+  color:var(--ink);
+  padding:13px 16px;outline:none;
+  transition:border .2s,background .2s;
+  -webkit-appearance:none;appearance:none;
+}
+.ff input::placeholder{color:var(--ink-30)}
+.ff input:focus,.ff select:focus{
+  border-color:var(--solar);background:var(--cream);
+}
+.ff select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%231A1612' fill-opacity='.4' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 14px center;
+  background-color:var(--cream-deep);
+  padding-right:36px;cursor:pointer;
+}
+.ff select option{background:var(--cream)}
+
+.wl-submit{
+  width:100%;margin-top:8px;
+  background:var(--ink);color:var(--cream);
+  border:none;border-radius:40px;
+  font-family:var(--f-sans);font-size:.88rem;font-weight:500;
+  letter-spacing:.06em;text-transform:uppercase;
+  padding:16px;
+  transition:background .2s,transform .15s;
+}
+.wl-submit:hover{background:var(--solar);color:var(--ink);transform:translateY(-1px)}
+
+.wl-legal{
+  margin-top:14px;font-size:.72rem;
+  color:var(--ink-30);text-align:center;line-height:1.6;
+}
+
+/* Success */
+#wl-success{
+  display:none;text-align:center;padding:20px 0;
+}
+#wl-success.show{display:block}
+.success-ring{
+  width:72px;height:72px;margin:0 auto 24px;
+  background:var(--solar-light);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+}
+.success-ring svg{width:28px;height:28px}
+#wl-success h3{
+  font-family:var(--f-display);
+  font-size:1.8rem;font-weight:300;
+  margin-bottom:12px;
+}
+#wl-success p{font-size:.9rem;color:var(--ink-60);line-height:1.7}
+
+/* ══════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════ */
+footer{
+  background:var(--ink);color:var(--cream);
+  padding:64px var(--pad) 40px;
+}
+.footer-top{
+  display:grid;
+  grid-template-columns:1.5fr 1fr 1fr;
+  gap:48px;
+  padding-bottom:48px;
+  border-bottom:1px solid rgba(247,243,236,.08);
+  margin-bottom:32px;
+}
+.ft-brand{
+  font-family:var(--f-display);font-size:1.6rem;
+  font-weight:300;margin-bottom:12px;
+  display:flex;align-items:center;gap:10px;
+}
+.ft-tagline{font-size:.85rem;color:rgba(247,243,236,.4);line-height:1.7;max-width:260px}
+
+.ft-col-title{
+  font-size:.7rem;font-weight:500;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(247,243,236,.3);
+  margin-bottom:20px;
+}
+.ft-links{display:flex;flex-direction:column;gap:12px}
+.ft-links a{
+  font-size:.875rem;color:rgba(247,243,236,.55);
+  transition:color .2s;
+}
+.ft-links a:hover{color:var(--solar)}
+
+.social-row{
+  display:flex;gap:12px;margin-top:24px;
+}
+.soc{
+  width:36px;height:36px;border-radius:50%;
+  border:1px solid rgba(247,243,236,.12);
+  display:flex;align-items:center;justify-content:center;
+  transition:border-color .2s,background .2s;
+}
+.soc:hover{border-color:var(--solar);background:rgba(232,184,0,.1)}
+.soc svg{width:14px;height:14px;fill:rgba(247,243,236,.45)}
+.soc:hover svg{fill:var(--solar)}
+
+.footer-bottom{
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:16px;
+}
+.footer-copy{font-size:.75rem;color:rgba(247,243,236,.2)}
+.footer-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:.7rem;font-weight:500;letter-spacing:.1em;
+  text-transform:uppercase;color:rgba(247,243,236,.25);
+}
+.footer-badge span{
+  width:6px;height:6px;background:var(--solar);
+  border-radius:50%;animation:pulse 2.5s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media(max-width:900px){
+  #hero{grid-template-columns:1fr;padding-bottom:60px}
+  #hero::before{background:linear-gradient(180deg,var(--cream) 65%,var(--solar-pale) 65%)}
+  .hero-right{
+    display:flex;
+    justify-content:center;
+    padding:0 var(--pad) 60px;
+    animation-delay:.3s;
+  }
+  .sun-scene{width:min(220px,55vw);height:min(220px,55vw)}
+  .hero-stat-card{display:none}
+  .planes-header,.planes-grid,
+  .sim-inner,.wl-inner,
+  .footer-top{grid-template-columns:1fr}
+  .form-duo{grid-template-columns:1fr}
+  .plan:first-child{border-right:none;border-bottom:1px solid var(--ink-10)}
+  .problema-wrap{grid-template-columns:1fr}
+  .problema-left{padding:36px}
+}
+@media(max-width:600px){
+  .nav-links{display:none}
+  h1.hero-h1{font-size:2.6rem}
+  .hero-ctas{flex-direction:column;align-items:flex-start}
+  .wl-form-card{padding:28px 20px}
+}
+</style>
+</head>
+<body>
+
+
+<!-- ════ NAV ════ -->
+<nav id="nav">
+  <div class="nav-brand">
+    <svg class="brand-mark" viewBox="0 0 30 30" fill="none">
+      <circle cx="15" cy="15" r="7" fill="var(--solar)"/>
+      <circle cx="15" cy="2.5" r="1.8" fill="var(--solar)"/>
+      <circle cx="15" cy="27.5" r="1.8" fill="var(--solar)"/>
+      <circle cx="2.5" cy="15" r="1.8" fill="var(--solar)"/>
+      <circle cx="27.5" cy="15" r="1.8" fill="var(--solar)"/>
+      <circle cx="6.2" cy="6.2" r="1.8" fill="var(--solar)"/>
+      <circle cx="23.8" cy="23.8" r="1.8" fill="var(--solar)"/>
+      <circle cx="23.8" cy="6.2" r="1.8" fill="var(--solar)"/>
+      <circle cx="6.2" cy="23.8" r="1.8" fill="var(--solar)"/>
+    </svg>
+    Solaris
+  </div>
+  <div class="nav-links">
+    <a href="#problema">El problema</a>
+    <a href="#simulador">Simulador</a>
+  </div>
+  <button class="nav-pill" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">
+    Lista de espera
+  </button>
+</nav>
+
+<!-- ════ HERO ════ -->
+<section id="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow hero-enter he-d0">Lanzamiento en Santiago · 2025</div>
+
+    <h1 class="hero-h1">
+      <span class="line-mask"><span class="line-inner"><em>Luz solar</em></span></span>
+      <span class="line-mask"><span class="line-inner"><strong>para el negocio</strong></span></span>
+      <span class="line-mask"><span class="line-inner">de la esquina.</span></span>
+    </h1>
+
+    <p class="hero-p hero-enter he-d2">
+      Solaris hace que los pequeños y medianos negocios en Chile puedan instalar energía solar sin trámites, sin burocracia y sin gastar de más.
+    </p>
+
+    <div class="hero-ctas hero-enter he-d3">
+      <button class="hero-btn-main" onclick="document.getElementById('problema').scrollIntoView({behavior:'smooth'})">
+        Cómo funciona
+        <svg viewBox="0 0 13 13" fill="none"><path d="M6.5 2v9M2.5 7.5l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="hero-btn-sec" onclick="document.getElementById('simulador').scrollIntoView({behavior:'smooth'})">
+        Calcular mi ahorro →
+      </button>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="sun-scene">
+      <svg viewBox="0 0 380 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Outer glow -->
+        <circle class="sun-pulse" cx="190" cy="190" r="170" fill="var(--solar)" opacity=".06"/>
+        <!-- Orbit ring 1 — se dibuja -->
+        <g class="sun-orbit">
+          <circle class="sun-draw-1" cx="190" cy="190" r="140" stroke="var(--solar)" stroke-width="1" stroke-dasharray="6 10" opacity=".35"/>
+          <circle class="sun-dot sd-1a" cx="190" cy="50" r="5" fill="var(--solar)" opacity=".6"/>
+          <circle class="sun-dot sd-1b" cx="330" cy="190" r="3.5" fill="var(--solar)" opacity=".4"/>
+        </g>
+        <!-- Orbit ring 2 — se dibuja -->
+        <g class="sun-orbit-2">
+          <circle class="sun-draw-2" cx="190" cy="190" r="105" stroke="var(--solar)" stroke-width="1" stroke-dasharray="3 14" opacity=".25"/>
+          <circle class="sun-dot sd-2a" cx="190" cy="85" r="4" fill="var(--ink)" stroke="var(--solar)" stroke-width="1.5" opacity=".7"/>
+          <circle class="sun-dot sd-2b" cx="295" cy="190" r="4" fill="var(--ink)" stroke="var(--solar)" stroke-width="1.5" opacity=".7"/>
+        </g>
+        <!-- Core sun — escala desde 0 -->
+        <circle class="sun-core-outer" cx="190" cy="190" r="68" fill="var(--solar)" opacity=".15"/>
+        <circle class="sun-core-mid" cx="190" cy="190" r="52" fill="var(--solar)" opacity=".3"/>
+        <circle class="sun-core" cx="190" cy="190" r="38" fill="var(--solar)"/>
+        <!-- Panel lines overlay -->
+        <line x1="174" y1="175" x2="206" y2="175" stroke="var(--ink)" stroke-width="1.5" opacity=".2"/>
+        <line x1="174" y1="183" x2="206" y2="183" stroke="var(--ink)" stroke-width="1.5" opacity=".2"/>
+        <line x1="174" y1="191" x2="206" y2="191" stroke="var(--ink)" stroke-width="1.5" opacity=".2"/>
+        <line x1="174" y1="199" x2="206" y2="199" stroke="var(--ink)" stroke-width="1.5" opacity=".2"/>
+        <line x1="190" y1="172" x2="190" y2="208" stroke="var(--ink)" stroke-width="1.5" opacity=".2"/>
+        <line x1="182" y1="172" x2="182" y2="208" stroke="var(--ink)" stroke-width="1.5" opacity=".2"/>
+        <line x1="198" y1="172" x2="198" y2="208" stroke="var(--ink)" stroke-width="1.5" opacity=".2"/>
+      </svg>
+
+      <div class="hero-stat-card hsc-1">
+        <div class="hsc-num">−65%</div>
+        <div class="hsc-lbl">en tu boleta mensual</div>
+      </div>
+      <div class="hero-stat-card hsc-2">
+        <div class="hsc-num">1 día</div>
+        <div class="hsc-lbl">instalación Lite</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════ PROBLEMA ════ -->
+<section id="problema">
+  <div class="wrap">
+    <div class="problema-wrap r">
+      <div class="problema-left">
+        <div>
+          <span class="section-num">01 / Contexto</span>
+          <h2 class="s-title">
+            Tu negocio<br>
+            paga de <em>más</em>.<br>
+            <b>Sin razón.</b>
+          </h2>
+        </div>
+        <div class="problema-stat">
+          <div class="ps-num">+40%</div>
+          <div class="ps-lbl">subida promedio en tarifas eléctricas<br>para PYMEs en los últimos 5 años</div>
+        </div>
+      </div>
+      <div class="problema-right">
+        <div class="pain-row r r-d1">
+          <span class="pain-idx">01</span>
+          <div class="pain-body">
+            <div class="pain-title">Cotizaciones que nunca llegan</div>
+            <div class="pain-desc">Las empresas de paneles priorizan proyectos grandes. Si tu negocio es pequeño, esperarás semanas por una respuesta que nunca es clara.</div>
+          </div>
+        </div>
+        <div class="pain-row r r-d2">
+          <span class="pain-idx">02</span>
+          <div class="pain-body">
+            <div class="pain-title">Trámites imposibles de navegar solo</div>
+            <div class="pain-desc">Permisos SEC, notificación a la distribuidora, certificaciones municipales. Ningún dueño de local tiene tiempo para eso.</div>
+          </div>
+        </div>
+        <div class="pain-row r r-d3">
+          <span class="pain-idx">03</span>
+          <div class="pain-body">
+            <div class="pain-title">Financiamiento para grandes, no para ti</div>
+            <div class="pain-desc">Los subsidios existen pero son inaccesibles sin orientación. Los bancos piden garantías que la mayoría de las PYMEs no tiene.</div>
+          </div>
+        </div>
+        <div class="pain-row r r-d4">
+          <span class="pain-idx">04</span>
+          <div class="pain-body">
+            <div class="pain-title">Nada pensado para el negocio de la esquina</div>
+            <div class="pain-desc">El mercado ofrece soluciones para casas o para industria. Un café, una peluquería o una ferretera sencillamente no existen para este sector.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ SIMULADOR ════ -->
+<section id="simulador">
+  <div class="wrap">
+    <div class="sim-inner">
+
+      <div class="sim-left">
+        <div class="sim-label r">Simulador de ahorro</div>
+        <h2 class="sim-h2 r r-d1">¿Cuánto <em>ahorrarías</em><br>con Solaris?</h2>
+        <p class="sim-hint r r-d2">Ingresa el valor promedio de tu boleta de luz y calcula en segundos tu ahorro mensual y en cuánto tiempo recuperas la inversión.</p>
+
+        <div class="sf r r-d2">
+          <label for="boleta">Boleta mensual promedio (CLP)</label>
+          <input type="number" id="boleta" placeholder="150.000" min="0" step="1000"/>
+        </div>
+
+        <div class="plan-toggle r r-d3">
+          <button class="pt-btn on" id="pt-lite" onclick="setPlan('lite')">Solaris Lite</button>
+          <button class="pt-btn" id="pt-pro" onclick="setPlan('pro')">Solaris Pro</button>
+        </div>
+
+        <button class="sim-calc-btn r r-d3" onclick="calcular()">
+          Calcular ahorro →
+        </button>
+      </div>
+
+      <div class="sim-right r r-d2">
+        <div class="sim-result-shell">
+          <div class="sim-empty" id="sem">
+            <svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="11" fill="var(--solar)" opacity=".3"/><circle cx="24" cy="24" r="7" fill="var(--solar)" opacity=".6"/><line x1="24" y1="4" x2="24" y2="10" stroke="var(--solar)" stroke-width="2" stroke-linecap="round"/><line x1="24" y1="38" x2="24" y2="44" stroke="var(--solar)" stroke-width="2" stroke-linecap="round"/><line x1="4" y1="24" x2="10" y2="24" stroke="var(--solar)" stroke-width="2" stroke-linecap="round"/><line x1="38" y1="24" x2="44" y2="24" stroke="var(--solar)" stroke-width="2" stroke-linecap="round"/></svg>
+            Ingresa tu boleta y presiona<br>Calcular para ver tus resultados
+          </div>
+          <div class="sim-data" id="sdata">
+            <div class="sim-plan-tag" id="sptag"></div>
+            <div class="sim-metric">
+              <div class="sm-lbl">Ahorro mensual estimado</div>
+              <div class="sm-val hi" id="smes"></div>
+              <div class="sm-note" id="spct"></div>
+            </div>
+            <div class="sim-metric">
+              <div class="sm-lbl">Ahorro anual estimado</div>
+              <div class="sm-val" id="sanual"></div>
+            </div>
+            <div class="sim-metric">
+              <div class="sm-lbl">Recuperación de inversión</div>
+              <div class="sm-val" id="spayback"></div>
+              <div class="payback-track"><div class="payback-fill" id="pfill"></div></div>
+              <div class="sm-note" id="spbsub"></div>
+            </div>
+            <div class="sim-metric" style="border-bottom:none;padding-top:12px;padding-bottom:20px;">
+              <button onclick="resetSim()" style="background:none;border:none;font-family:var(--f-sans);font-size:.75rem;color:rgba(247,243,236,.3);letter-spacing:.1em;text-transform:uppercase;padding:0;transition:color .2s;" onmouseover="this.style.color='rgba(247,243,236,.7)'" onmouseout="this.style.color='rgba(247,243,236,.3)'">← Recalcular</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════ PLANES ════ -->
+<section id="planes">
+  <div class="planes-header">
+    <div>
+      <span class="section-num r">03 / Planes</span>
+      <h2 class="s-title r r-d1">Dos caminos,<br>un mismo <em>resultado.</em></h2>
+    </div>
+    <p class="planes-intro r r-d2">
+      Elige según el tamaño de tu negocio y consumo actual. Nosotros nos encargamos de todo lo demás — desde el permiso hasta la primera lectura.
+    </p>
+  </div>
+
+  <div class="planes-grid">
+    <!-- LITE -->
+    <div class="plan r r-d1">
+      <div class="plan-chip">Solaris Lite</div>
+      <div class="plan-name">Para el negocio<br>que arranca simple.</div>
+      <div class="plan-sub">Peluquerías · Cafés · Tiendas · Locales pequeños</div>
+
+      <div class="plan-price-block">
+        <span class="plan-amt">$380.000</span>
+        <span class="plan-unit">CLP</span>
+      </div>
+      <div class="plan-saving">
+        <svg viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Ahorra ~15% de tu boleta mensual
+      </div>
+
+      <ul class="plan-features">
+        <li class="pf">
+          <svg class="pf-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="var(--ink)" stroke-width="1.2" opacity=".2"/><path d="M6 10.5l3 3 5-6" stroke="var(--ink)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          2 a 4 paneles de fachada de bajo perfil
+        </li>
+        <li class="pf">
+          <svg class="pf-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="var(--ink)" stroke-width="1.2" opacity=".2"/><path d="M6 10.5l3 3 5-6" stroke="var(--ink)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Instalación en un solo día, sin cerrar tu local
+        </li>
+        <li class="pf">
+          <svg class="pf-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="var(--ink)" stroke-width="1.2" opacity=".2"/><path d="M6 10.5l3 3 5-6" stroke="var(--ink)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Todos los permisos y trámites incluidos
+        </li>
+        <li class="pf">
+          <svg class="pf-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="var(--ink)" stroke-width="1.2" opacity=".2"/><path d="M6 10.5l3 3 5-6" stroke="var(--ink)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Garantía de instalación por 5 años
+        </li>
+        <li class="pf">
+          <svg class="pf-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="var(--ink)" stroke-width="1.2" opacity=".2"/><path d="M6 10.5l3 3 5-6" stroke="var(--ink)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          App de monitoreo de ahorro en tiempo real
+        </li>
+      </ul>
+
+      <button class="plan-btn" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">
+        Me interesa
+        <svg viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+    <!-- PRO -->
+    <div class="plan highlight r r-d2">
+      <div class="plan-chip">Solaris Pro</div>
+      <div class="plan-name">Para el negocio<br>que quiere el máximo.</div>
+      <div class="plan-sub">Restaurants · Oficinas · Negocios medianos</div>
+
+      <div class="plan-price-block">
+        <span class="plan-amt">$2.500.000</span>
+        <span class="plan-unit">CLP · desde</span>
+      </div>
+      <div class="plan-saving">
+        <svg viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Ahorra entre 60% y 80% de tu boleta mensual
+      </div>
+
+      <ul class="plan-features">
+        <li class="pf">
+          <svg class="pf-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="var(--ink)" stroke-width="1.2" opacity=".2"/><path d="M6 10.5l3 3 5-6" stroke="var(--ink)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Sistema completo: techo + fachada (6–20 paneles)
+        </li>
+        <li class="pf">
+          <svg class="pf-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="var(--ink)" stroke-width="1.2" opacity=".2"/><path d="M6 10.5l3 3 5-6" stroke="var(--ink)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Gestión de subsidios CORFO y municipales incluida
+        </li>
+        <li class="pf">
+          <svg class="pf-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="var(--ink)" stroke-width="1.2" opacity=".2"/><path d="M6 10.5l3 3 5-6" stroke="var(--ink)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Ingeniero dedicado para tu proyecto
+        </li>
+        <li class="pf">
+          <svg class="pf-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="var(--ink)" stroke-width="1.2" opacity=".2"/><path d="M6 10.5l3 3 5-6" stroke="var(--ink)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Financiamiento en cuotas sin banco
+        </li>
+        <li class="pf">
+          <svg class="pf-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="var(--ink)" stroke-width="1.2" opacity=".2"/><path d="M6 10.5l3 3 5-6" stroke="var(--ink)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Dashboard de consumo + reportes mensuales
+        </li>
+      </ul>
+
+      <button class="plan-btn" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">
+        Me interesa
+        <svg viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ════ FOTO SEPARADOR ════ -->
+<section id="foto-separador"></section>
+
+<!-- ════ WAITLIST ════ -->
+<section id="waitlist">
+  <div class="wrap">
+    <div class="wl-inner">
+
+      <div class="wl-left">
+        <div class="wl-overline r">Lista de espera</div>
+        <h2 class="wl-h2 r r-d1">
+          Sé el primero<br>
+          en <em>encender</em><br>
+          tu negocio.
+        </h2>
+        <p class="wl-body r r-d2">
+          Estamos preparando el lanzamiento en Santiago. Déjanos tus datos y te contactaremos con acceso prioritario y precio de fundador cuando abramos en tu comuna.
+        </p>
+        <ul class="wl-reasons r r-d3">
+          <li class="wl-reason"><span class="wl-dot"></span>Acceso prioritario antes del lanzamiento público</li>
+          <li class="wl-reason"><span class="wl-dot"></span>Precio especial de fundador (solo para lista de espera)</li>
+          <li class="wl-reason"><span class="wl-dot"></span>Asesoría gratuita para elegir el plan correcto</li>
+        </ul>
+      </div>
+
+      <div class="wl-right r r-d2">
+        <div class="wl-form-card r r-d3">
+
+          <div id="wl-form-body">
+            <div class="form-duo">
+              <div class="ff">
+                <label for="wl-nombre">Nombre</label>
+                <input type="text" id="wl-nombre" placeholder="Tu nombre"/>
+              </div>
+              <div class="ff">
+                <label for="wl-email">Correo</label>
+                <input type="email" id="wl-email" placeholder="tu@negocio.cl"/>
+              </div>
+            </div>
+            <div class="form-single">
+              <div class="ff">
+                <label for="wl-tipo">Tipo de negocio</label>
+                <select id="wl-tipo">
+                  <option value="" disabled selected>¿Qué tipo de negocio tienes?</option>
+                  <option>Peluquería o barbería</option>
+                  <option>Café o pastelería</option>
+                  <option>Restaurant o comida</option>
+                  <option>Tienda retail o boutique</option>
+                  <option>Ferretería o materiales</option>
+                  <option>Oficina profesional</option>
+                  <option>Clínica o salud</option>
+                  <option>Otro negocio</option>
+                </select>
+              </div>
+            </div>
+            <button class="wl-submit" onclick="submitWL()">Unirme a la lista de espera</button>
+            <p class="wl-legal">Sin spam. Sin venta de datos. Solo te avisamos cuando lleguemos a tu comuna.</p>
+          </div>
+
+          <div id="wl-success">
+            <div class="success-ring">
+              <svg viewBox="0 0 28 28" fill="none"><path d="M5 14.5l6 6 12-13" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h3>¡Estás dentro de la lista!</h3>
+            <p>Te contactaremos cuando Solaris llegue a tu comuna — con acceso prioritario y precio de fundador.<br><br>Mientras tanto, cuéntale a ese amigo que también odia su boleta de luz ☀</p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════ FOOTER ════ -->
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <div class="ft-brand">
+          <svg width="22" height="22" viewBox="0 0 30 30" fill="none">
+            <circle cx="15" cy="15" r="7" fill="var(--solar)"/>
+            <circle cx="15" cy="2.5" r="1.8" fill="var(--solar)"/><circle cx="15" cy="27.5" r="1.8" fill="var(--solar)"/>
+            <circle cx="2.5" cy="15" r="1.8" fill="var(--solar)"/><circle cx="27.5" cy="15" r="1.8" fill="var(--solar)"/>
+            <circle cx="6.2" cy="6.2" r="1.8" fill="var(--solar)"/><circle cx="23.8" cy="23.8" r="1.8" fill="var(--solar)"/>
+            <circle cx="23.8" cy="6.2" r="1.8" fill="var(--solar)"/><circle cx="6.2" cy="23.8" r="1.8" fill="var(--solar)"/>
+          </svg>
+          Solaris
+        </div>
+        <p class="ft-tagline">Energía solar simple y accesible para el comercio chileno. Próximamente en Santiago.</p>
+        <div class="social-row">
+          <a href="#" class="soc" aria-label="Instagram">
+            <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+          <a href="#" class="soc" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          <a href="#" class="soc" aria-label="TikTok">
+            <svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <div class="ft-col-title">Navegación</div>
+        <div class="ft-links">
+          <a href="#problema">El problema</a>
+          <a href="#simulador">Simulador de ahorro</a>
+          <a href="#waitlist">Lista de espera</a>
+        </div>
+      </div>
+      <div>
+        <div class="ft-col-title">Contacto</div>
+        <div class="ft-links">
+          <a href="mailto:hola@solarischile.cl">hola@solarischile.cl</a>
+          <a href="#">Santiago, Chile</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 Solaris Chile SpA — Proyecto en desarrollo</span>
+      <span class="footer-badge">
+        <span></span>Próximamente en tu comuna
+      </span>
+    </div>
+  </div>
+</footer>
+
+<!-- ════ JS ════ -->
+<script>
+// ── Navbar scroll
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('stuck',scrollY>60),{passive:true});
+
+// ── Scroll reveal
+const ro=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('up');ro.unobserve(e.target)}});
+},{threshold:.1});
+document.querySelectorAll('.r,.r-fade').forEach(el=>ro.observe(el));
+
+
+// ── Simulador
+let activePlan='lite';
+function setPlan(p){
+  activePlan=p;
+  document.getElementById('pt-lite').classList.toggle('on',p==='lite');
+  document.getElementById('pt-pro').classList.toggle('on',p==='pro');
+}
+
+function fCLP(n){return'$'+Math.round(n).toLocaleString('es-CL')}
+
+function calcular(){
+  const val=parseFloat(document.getElementById('boleta').value);
+  if(!val||val<=0){
+    const inp=document.getElementById('boleta');
+    inp.style.borderColor='#c4622d';
+    inp.focus();
+    setTimeout(()=>inp.style.borderColor='',1600);
+    return;
+  }
+  let ahorro,inv,tag,pctTxt;
+  if(activePlan==='lite'){
+    ahorro=val*.15;inv=380000;
+    tag='SOLARIS LITE · ESTIMACIÓN';
+    pctTxt='15% de tu boleta mensual';
+  } else {
+    const p=val>=300000?.75:.65;
+    ahorro=val*p;inv=2500000;
+    tag='SOLARIS PRO · ESTIMACIÓN';
+    pctTxt=Math.round(p*100)+'% de tu boleta mensual';
+  }
+  const anual=ahorro*12;
+  const pb=inv/ahorro;
+  const pbDisplay=pb>=12?(pb/12).toFixed(1)+' años':Math.round(pb)+' meses';
+  const maxMo=activePlan==='lite'?48:72;
+  const barW=Math.min((pb/maxMo)*100,100);
+
+  document.getElementById('sptag').textContent=tag;
+  document.getElementById('smes').textContent=fCLP(ahorro);
+  document.getElementById('spct').textContent='Ahorrando el '+pctTxt;
+  document.getElementById('sanual').textContent=fCLP(anual);
+  document.getElementById('spayback').textContent=pbDisplay;
+  document.getElementById('spbsub').textContent='Inversión: '+fCLP(inv)+' — recuperas desde el mes '+Math.round(pb);
+
+  document.getElementById('sem').style.display='none';
+  const sd=document.getElementById('sdata');
+  sd.classList.add('show');
+  setTimeout(()=>document.getElementById('pfill').style.width=barW+'%',80);
+}
+
+document.getElementById('boleta').addEventListener('keydown',e=>{if(e.key==='Enter')calcular()});
+
+// ── Reset simulador
+function resetSim(){
+  const sd=document.getElementById('sdata');
+  sd.classList.remove('show');
+  document.getElementById('pfill').style.width='0%';
+  document.getElementById('sem').style.display='';
+  document.getElementById('boleta').value='';
+  document.getElementById('boleta').focus();
+}
+
+// ── Waitlist submit
+function submitWL(){
+  const n=document.getElementById('wl-nombre').value.trim();
+  const e=document.getElementById('wl-email').value.trim();
+  const t=document.getElementById('wl-tipo').value;
+  const highlight=id=>{const el=document.getElementById(id);el.style.borderColor='#c4622d';setTimeout(()=>el.style.borderColor='',1800)};
+  if(!n){highlight('wl-nombre');return}
+  if(!e||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){highlight('wl-email');return}
+  if(!t){highlight('wl-tipo');return}
+  document.getElementById('wl-form-body').style.display='none';
+  const s=document.getElementById('wl-success');
+  s.classList.add('show');
+  s.style.display='block';
+}
+</script>
+</body>
+</html>
