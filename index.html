@@ -756,7 +756,7 @@ h2.sim-h2 em{font-style:italic;color:var(--solar)}
   margin-bottom:8px;
 }
 .sm-val{
-  font-family:var(--f-sans);
+  font-family:var(--f-display);
   font-size:2.6rem;font-weight:300;
   line-height:1;color:var(--cream);
   letter-spacing:-.01em;
@@ -1483,7 +1483,7 @@ footer{
       <div>
         <div class="ft-col-title">Contacto</div>
         <div class="ft-links">
-          <a href="mailto:hola@solarischile.cl">contacto@solarischile.cl</a>
+          <a href="mailto:hola@solarischile.cl">hola@solarischile.cl</a>
           <a href="#">Santiago, Chile</a>
         </div>
       </div>
@@ -1551,9 +1551,7 @@ function calcular(){
   }
   const anual=ahorro*12;
   const pb=inv/ahorro;
-  const pbDisplay = activePlan==='lite'
-    ? Math.round(pb)+' meses'
-    : pb>=36 ? (pb/12).toFixed(1)+' años' : Math.round(pb)+' meses';
+  const pbDisplay=pb>=12?(pb/12).toFixed(1)+' años':Math.round(pb)+' meses';
   const maxMo=activePlan==='lite'?48:72;
   const barW=Math.min((pb/maxMo)*100,100);
 
