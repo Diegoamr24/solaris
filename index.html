@@ -416,7 +416,7 @@ h1.hero-h1 strong{
 #problema::before{
   content:'';
   position:absolute;inset:0;
-  background-image: url('img/fondo-problema.jpg');
+  background-image: url('https://images.unsplash.com/photo-1668513316682-e99e3d7e6f1f?w=1400&q=65&auto=format&fit=crop');
   background-size:cover;
   background-position:center;
   opacity:.18;
@@ -683,7 +683,7 @@ h2.sim-h2 em{font-style:italic;color:var(--solar)}
   display:grid;grid-template-columns:1fr 1fr;
   gap:1px;background:rgba(247,243,236,.08);
   border-radius:var(--r);overflow:hidden;
-  margin-bottom:32px;
+  margin-bottom:12px;
 }
 .pt-btn{
   background:transparent;border:none;
@@ -694,6 +694,17 @@ h2.sim-h2 em{font-style:italic;color:var(--solar)}
 }
 .pt-btn.on{background:var(--solar);color:var(--ink);font-weight:500}
 .pt-btn:hover:not(.on){background:rgba(247,243,236,.06);color:var(--cream)}
+
+.plan-desc{
+  font-family:var(--f-sans);
+  font-size:.8rem;
+  color:rgba(247,243,236,.45);
+  line-height:1.5;
+  margin-bottom:24px;
+  min-height:2.4em;
+  transition:opacity .25s ease;
+}
+.plan-desc.fade{opacity:0}
 
 .sim-calc-btn{
   width:100%;
@@ -806,7 +817,7 @@ h2.sim-h2 em{font-style:italic;color:var(--solar)}
 #waitlist::before{
   content:'';
   position:absolute;inset:0;
-  background-image: url('img/fondo-waitlist.jpg');
+  background-image: url('https://images.unsplash.com/photo-1749720453869-d31ee8c7bb85?w=1400&q=65&auto=format&fit=crop');
   background-size:cover;
   background-position:center top;
   opacity:.14;
@@ -1000,15 +1011,32 @@ footer{
    RESPONSIVE
 ══════════════════════════════════════════ */
 @media(max-width:900px){
-  #hero{grid-template-columns:1fr;padding-bottom:60px}
-  #hero::before{background:linear-gradient(180deg,var(--cream) 65%,var(--solar-pale) 65%)}
+  #hero{
+    grid-template-columns:1fr;
+    padding-bottom:60px;
+    /* necesario para que hero-right con position:absolute se ancle aquí */
+    position:relative;
+  }
+  #hero::before{background:var(--cream)}
+  .hero-left{
+    position:relative;
+    z-index:2; /* texto encima del sol */
+  }
   .hero-right{
+    position:absolute;
+    top:50%;left:50%;
+    transform:translate(-50%,-50%);
+    width:100%;
     display:flex;
     justify-content:center;
-    padding:0 var(--pad) 60px;
+    align-items:center;
+    padding:0;
+    opacity:.18; /* sol visible pero no compite con el texto */
+    z-index:1;
+    pointer-events:none;
     animation-delay:.3s;
   }
-  .sun-scene{width:min(220px,55vw);height:min(220px,55vw)}
+  .sun-scene{width:min(340px,85vw);height:min(340px,85vw)}
   .hero-stat-card{display:none}
   .planes-header,.planes-grid,
   .sim-inner,.wl-inner,
@@ -1195,6 +1223,9 @@ footer{
           <button class="pt-btn on" id="pt-lite" onclick="setPlan('lite')">Solaris Lite</button>
           <button class="pt-btn" id="pt-pro" onclick="setPlan('pro')">Solaris Pro</button>
         </div>
+        <p class="plan-desc" id="plan-desc">
+          Ideal para negocios pequeños: 2–4 paneles, instalación en 1 día, ahorra hasta un 15% de tu boleta mensual.
+        </p>
 
         <button class="sim-calc-btn r r-d3" onclick="calcular()">
           Calcular ahorro →
@@ -1481,10 +1512,17 @@ document.querySelectorAll('.r,.r-fade').forEach(el=>ro.observe(el));
 
 // ── Simulador
 let activePlan='lite';
+const planDescs = {
+  lite: 'Ideal para negocios pequeños: 2–4 paneles, instalación en 1 día, ahorra hasta un 15% de tu boleta mensual.',
+  pro:  'Para negocios con mayor consumo: 6–20 paneles, ahorra entre el 65% y 75% de tu boleta, incluye gestión de subsidios.'
+};
 function setPlan(p){
   activePlan=p;
   document.getElementById('pt-lite').classList.toggle('on',p==='lite');
   document.getElementById('pt-pro').classList.toggle('on',p==='pro');
+  const desc=document.getElementById('plan-desc');
+  desc.classList.add('fade');
+  setTimeout(()=>{desc.textContent=planDescs[p];desc.classList.remove('fade');},220);
 }
 
 function fCLP(n){return'$'+Math.round(n).toLocaleString('es-CL')}
